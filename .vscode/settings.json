@@ -1,0 +1,31 @@
+{
+    "files.associations": {
+        "*.COBOL*": "cobol",
+        "*.COB*": "cobol",
+        "*.COBCOPY*": "cobol",
+        "*.COPYBOOK*": "cobol",
+        "*.COPY*": "cobol",
+        "*.PL1*": "pl1",
+        "*.PLI*": "pl1",
+        "*.INC*": "pl1",
+        "*.INCLUDE*": "pl1",
+        "*.JCL*": "jcl",
+        "*.ASM*": "hlasm",
+        "*.ASSEMBLE*": "hlasm",
+        "*.HLASM*": "hlasm",
+        "*.HLA*": "hlasm",
+        "*.EXEC*": "rexx",
+        "*.REXX*": "rexx",
+        "*.REXXINC*": "rexx",
+        "*.copyasm": "hlasm",
+        "*.macasm": "hlasm",
+        "*.bms": "hlasm",
+        "*.rex": "rexx",
+        "*.rexx": "rexx",
+        "lvgl.h": "c",
+        "lv_types.h": "c",
+        "lv_examples.h": "c",
+        "lv_init.h": "c",
+        "lv_conf_internal.h": "c"
+    }
+}

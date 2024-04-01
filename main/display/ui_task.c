@@ -19,17 +19,8 @@
 #include "sdkconfig.h"
 #include <stdio.h>
 
-// Using SPI2 in the example, as it also supports octal modes on some targets
 #define LCD_HOST SPI2_HOST
-// To speed up transfers, every SPI transfer sends a bunch of lines. This define specifies how many.
-// More means more memory use, but less overhead for setting up / finishing transfers. Make sure 240
-// is dividable by this.
 #define PARALLEL_LINES CONFIG_EXAMPLE_LCD_FLUSH_PARALLEL_LINES
-// The number of frames to show before rotate the graph
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////// Please update the following configuration according to your LCD spec //////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #define EXAMPLE_LCD_PIXEL_CLOCK_HZ (20 * 1000 * 1000)
 #define EXAMPLE_LCD_BK_LIGHT_ON_LEVEL 1
 #define EXAMPLE_LCD_BK_LIGHT_OFF_LEVEL !EXAMPLE_LCD_BK_LIGHT_ON_LEVEL
@@ -40,21 +31,14 @@
 #define EXAMPLE_PIN_NUM_RST 5
 #define EXAMPLE_PIN_NUM_BK_LIGHT 18
 
-// The pixel number in horizontal and vertical
 #define EXAMPLE_LCD_H_RES 240
 #define EXAMPLE_LCD_V_RES 240
-// Bit number used to represent command and parameter
 #define EXAMPLE_LCD_CMD_BITS 8
 #define EXAMPLE_LCD_PARAM_BITS 8
 
-#define BUF_LEN (240 * 24)
-
-// typedef void (*lv_display_flush_cb_t)(lv_display_t * disp, const lv_area_t * area, uint8_t * px_map);
+#define BUF_LEN (240 * 12)
 
 static esp_lcd_panel_handle_t panel_handle = NULL;
-
-static char *tmp_data;
-
 static void lvgl_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *color_map) {
     esp_lcd_panel_handle_t panel_handle1 = lv_display_get_user_data(disp);
     int len = (area->x2 + 1 - area->x1) * (area->y2 + 1 - area->y1);
@@ -66,7 +50,7 @@ static void lvgl_flush_cb(lv_display_t *disp, const lv_area_t *area, uint8_t *co
 
 static void increase_lvgl_tick(void *arg) { lv_tick_inc(2); }
 
-void app_main(void) {
+void ui_task(void *param) {
     gpio_config_t bk_gpio_config = {.mode = GPIO_MODE_OUTPUT, .pin_bit_mask = 1ULL << EXAMPLE_PIN_NUM_BK_LIGHT};
     // Initialize the GPIO of backlight
     ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
@@ -117,12 +101,12 @@ void app_main(void) {
     // ESP_ERROR_CHECK(esp_lcd_panel_swap_xy(panel_handle, false));
     ESP_ERROR_CHECK(gpio_set_level(EXAMPLE_PIN_NUM_BK_LIGHT, EXAMPLE_LCD_BK_LIGHT_ON_LEVEL));
     lv_init();
-    tmp_data = heap_caps_malloc(BUF_LEN * 2, MALLOC_CAP_DMA);
+    uint16_t *pdata1 = heap_caps_malloc(BUF_LEN * 2, MALLOC_CAP_DMA);
     uint16_t *pdata = heap_caps_malloc(BUF_LEN * 2, MALLOC_CAP_DMA);
     lv_display_t *ui_disp = lv_display_create(240, 240);
     lv_display_set_flush_cb(ui_disp, lvgl_flush_cb);
     lv_display_set_user_data(ui_disp, panel_handle);
-    lv_display_set_buffers(ui_disp, pdata, tmp_data, BUF_LEN * 2, LV_DISPLAY_RENDER_MODE_PARTIAL);
+    lv_display_set_buffers(ui_disp, pdata, pdata1, BUF_LEN * 2, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
     const esp_timer_create_args_t lvgl_tick_timer_args = {.callback = &increase_lvgl_tick, .name = "lvgl_tick"};
     esp_timer_handle_t lvgl_tick_timer = NULL;

@@ -1,0 +1,6 @@
+{
+    "excel_const_font":"./const_font.xlsx",
+    "excel_bin_font":"./get_bin.xlsx",
+    "font_format":"lvgl",
+    "out_path":"/home/zyy/esp/lv_port_linux_frame_buffer/ui/font/"
+}

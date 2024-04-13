@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: CC0-1.0
  */
 
+#include "common.h"
 #include "driver/gpio.h"
 #include "driver/spi_master.h"
 #include "esp_heap_caps.h"
@@ -17,6 +18,8 @@
 #include "freertos/task.h"
 #include "littlefs_filesystem.h"
 #include "lvgl.h"
+#include "msg_task.h"
+#include "net_connect_task.h"
 #include "nvs_flash.h"
 #include "sdkconfig.h"
 #include "ui_task.h"
@@ -26,6 +29,8 @@
 
 TaskHandle_t ui_Handle = NULL;
 TaskHandle_t weather_Handle = NULL;
+TaskHandle_t bind_Handle = NULL;
+TaskHandle_t msg_Handle = NULL;
 
 void app_main(void) {
     esp_err_t ret = nvs_flash_init();
@@ -33,10 +38,15 @@ void app_main(void) {
         ESP_ERROR_CHECK(nvs_flash_erase());
         ret = nvs_flash_init();
     }
+    dev_info_t *dev_info = get_dev_info();
+    dev_info->net_status = 1;
     wifi_init_sta();
     filesystem_init();
+    esp_db_init();
+    dev_info_init();
     // http_weather_task();
+    // xTaskCreate(bind_task, "ui_task", 2048, NULL, 5, &ui_Handle);
     xTaskCreate(http_weather_task, "weather_task", 8192, NULL, 5, &weather_Handle);
-    ESP_ERROR_CHECK(ret);
     xTaskCreate(ui_task, "ui_task", 8192, NULL, 5, &ui_Handle);
+    xTaskCreate(msg_task, "weather_task", 8192, NULL, 5, &msg_Handle);
 }

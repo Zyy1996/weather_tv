@@ -1,0 +1,10 @@
+# Sample csv file
+key,type,encoding,value
+storage,namespace,,
+bind_status,data,u8,0
+product_id,data,string,"weather_tv"
+dev_id,data,string,"test"
+dev_secret,data,string,"test"
+ap_name,data,string,"weather_clock"
+ap_secret,data,string,"weather_clock"
+

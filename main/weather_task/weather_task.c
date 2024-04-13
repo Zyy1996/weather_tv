@@ -19,14 +19,14 @@
 
 #include "esp_crt_bundle.h"
 #include "esp_system.h"
-// #include "esp_tls.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 #include "esp_http_client.h"
 #include <ctype.h>
-
+#include "common.h"
 #define MAX_HTTP_OUTPUT_BUFFER 512
+
 static const char *TAG = "HTTP_CLIENT";
 
 esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
@@ -121,32 +121,6 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt) {
     return ESP_OK;
 }
 
-static int check_ip(char *ip) {
-    int num, dots = 0;
-    char *ptr;
-
-    if (ip == NULL)
-        return 0;
-
-    ptr = strtok(ip, ".");
-    if (ptr == NULL)
-        return 0;
-
-    while (ptr) {
-        if (!isdigit((unsigned int)(*ptr)))
-            return 0;
-
-        num = atoi(ptr);
-        if (num < 0 || num > 255)
-            return 0;
-
-        dots++;
-        ptr = strtok(NULL, ".");
-    }
-
-    return (dots == 3);
-}
-
 static int https_get_public_ip(char *ip_buf, int len) {
     int rc = 0;
     // Declare local_response_buffer with size (MAX_HTTP_OUTPUT_BUFFER + 1) to prevent out of bound access when
@@ -226,10 +200,14 @@ static void http_get_weather(char *ip_buf) {
 }
 
 void http_weather_task(void *pvParameters) {
-    char ip_buf[32] = {0};
-    if (https_get_public_ip(ip_buf, sizeof(ip_buf)) == 0) {
-        http_get_weather(ip_buf);
+    dev_info_t *dev_info = get_dev_info();
+    if(dev_info->net_status == 1) {
+        char ip_buf[32] = {0};
+        if (https_get_public_ip(ip_buf, sizeof(ip_buf)) == 0) {
+            http_get_weather(ip_buf);
+        }
     }
+
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(10));
     }

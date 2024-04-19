@@ -30,6 +30,10 @@ mqtt_sub_msg_t mqtt_ser_get_msg[] = {
     {"dev_info",NULL},
 };
 
+mqtt_sub_msg_t mqtt_ser_report_msg[] = {
+    {"timestamp",NULL},
+};
+
 mqtt_main_msg_t mqtt_main_msg[] ={
     [MQTT_SER_RSP] = {
         .main_msg = "ser_rsp",
@@ -40,6 +44,11 @@ mqtt_main_msg_t mqtt_main_msg[] ={
         .main_msg = "ser_get",
         .len = sizeof(mqtt_ser_get_msg)/sizeof(mqtt_ser_get_msg[0]),
         .mqtt_sub_msg = mqtt_ser_get_msg,
+    },
+    [MQTT_SER_REPORT] = {
+        .main_msg = "ser_report",
+        .len = sizeof(mqtt_ser_report_msg)/sizeof(mqtt_ser_report_msg[0]),
+        .mqtt_sub_msg = mqtt_ser_report_msg,
     }
 };
 

@@ -36,6 +36,7 @@ typedef struct mqtt_sub_msg{
 typedef enum {
     MQTT_SER_RSP,
     MQTT_SER_GET,
+    MQTT_SER_REPORT,
     MQTT_TOP_MSG_NUM,
 };
 
